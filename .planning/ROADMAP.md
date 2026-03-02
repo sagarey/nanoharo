@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — 新建 src/agent-runner.ts（V2 SDK session 核心 wrapper）
+- [x] 01-01-PLAN.md — 新建 src/agent-runner.ts（V2 SDK session 核心 wrapper）
 - [ ] 01-02-PLAN.md — 改造 GroupQueue（SDKSession 替换 ChildProcess，内存 follow-up 队列）+ ipc.ts 清理
 - [ ] 01-03-PLAN.md — 改造 index.ts 和 task-scheduler.ts 完成端到端接入
 
@@ -66,6 +66,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. In-process Agent Runner | 0/3 | Planned | - |
+| 1. In-process Agent Runner | 1/3 | In progress | - |
 | 2. Container Layer Removal | 0/? | Not started | - |
 | 3. Single-Image Deployment | 0/? | Not started | - |

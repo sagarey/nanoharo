@@ -7,15 +7,15 @@
 
 ### Runner
 
-- [ ] **RUNNER-01**: 用 `@anthropic-ai/claude-agent-sdk` `query()` 直接在主进程内替代 `runContainerAgent()`
+- [x] **RUNNER-01**: 用 `@anthropic-ai/claude-agent-sdk` `query()` 直接在主进程内替代 `runContainerAgent()`
 - [ ] **RUNNER-02**: 删除 `src/container-runner.ts`、`src/container-runtime.ts`、`src/mount-security.ts`
 - [ ] **RUNNER-03**: 删除 `container/` 目录（Dockerfile、agent-runner、skills、build.sh）
 - [ ] **RUNNER-04**: IPC follow-up 消息机制改为进程内直接传递，去掉文件轮询
 
 ### Group
 
-- [ ] **GROUP-01**: agent `cwd` 设为 `groups/{name}/`，实现目录级 group 隔离
-- [ ] **GROUP-02**: session 存储路径沿用 `data/sessions/{group}/`
+- [x] **GROUP-01**: agent `cwd` 设为 `groups/{name}/`，实现目录级 group 隔离
+- [x] **GROUP-02**: session 存储路径沿用 `data/sessions/{group}/`
 
 ### Deploy
 
@@ -38,10 +38,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RUNNER-01 | Phase 1: In-process Agent Runner | Pending |
+| RUNNER-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | RUNNER-04 | Phase 1: In-process Agent Runner | Pending |
-| GROUP-01 | Phase 1: In-process Agent Runner | Pending |
-| GROUP-02 | Phase 1: In-process Agent Runner | Pending |
+| GROUP-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
+| GROUP-02 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | RUNNER-02 | Phase 2: Container Layer Removal | Pending |
 | RUNNER-03 | Phase 2: Container Layer Removal | Pending |
 | DEPLOY-01 | Phase 3: Single-Image Deployment | Pending |
@@ -53,4 +53,4 @@
 
 ---
 *Requirements defined: 2026-03-03*
-*Last updated: 2026-03-03 after roadmap creation*
+*Last updated: 2026-03-02 after 01-01 completion (RUNNER-01, GROUP-01, GROUP-02 complete)*
