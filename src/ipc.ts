@@ -15,6 +15,8 @@ import { isValidGroupFolder } from './group-folder.js';
 import { logger } from './logger.js';
 import { RegisteredGroup } from './types.js';
 
+// RUNNER-04: input/ 目录的写入侧（GroupQueue.sendMessage）已在 group-queue.ts 改造为内存队列，
+// ipc.ts 本身从未扫描 input/ 目录，无需修改。writeGroupsSnapshot 保留至 Phase 2 删除容器路径。
 export interface IpcDeps {
   sendMessage: (jid: string, text: string) => Promise<void>;
   registeredGroups: () => Record<string, RegisteredGroup>;
