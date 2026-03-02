@@ -12,7 +12,7 @@
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: In-process Agent Runner** - 用 SDK query() 替代容器调用，IPC 改为进程内传递，group 隔离改为目录级
+- [x] **Phase 1: In-process Agent Runner** - 用 SDK query() 替代容器调用，IPC 改为进程内传递，group 隔离改为目录级
 - [ ] **Phase 2: Container Layer Removal** - 删除所有容器相关代码和文件
 - [ ] **Phase 3: Single-Image Deployment** - 构建整个服务的主 Dockerfile
 
@@ -31,8 +31,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md — 新建 src/agent-runner.ts（V2 SDK session 核心 wrapper）
-- [ ] 01-02-PLAN.md — 改造 GroupQueue（SDKSession 替换 ChildProcess，内存 follow-up 队列）+ ipc.ts 清理
-- [ ] 01-03-PLAN.md — 改造 index.ts 和 task-scheduler.ts 完成端到端接入
+- [x] 01-02-PLAN.md — 改造 GroupQueue（SDKSession 替换 ChildProcess，内存 follow-up 队列）+ ipc.ts 清理
+- [x] 01-03-PLAN.md — 改造 index.ts 和 task-scheduler.ts 完成端到端接入
 
 ### Phase 2: Container Layer Removal
 **Goal**: 容器相关代码全部删除，代码库中不再有 Docker/容器运行时的残留
@@ -66,6 +66,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. In-process Agent Runner | 2/3 | In Progress|  |
+| 1. In-process Agent Runner | 3/3 | Complete | 2026-03-03 |
 | 2. Container Layer Removal | 0/? | Not started | - |
 | 3. Single-Image Deployment | 0/? | Not started | - |

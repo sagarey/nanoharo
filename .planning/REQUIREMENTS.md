@@ -39,7 +39,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | RUNNER-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
-| RUNNER-04 | Phase 1: In-process Agent Runner | Complete |
+| RUNNER-04 | Phase 1: In-process Agent Runner | Complete (01-02, 01-03) |
 | GROUP-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | GROUP-02 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | RUNNER-02 | Phase 2: Container Layer Removal | Pending |
@@ -53,4 +53,4 @@
 
 ---
 *Requirements defined: 2026-03-03*
-*Last updated: 2026-03-02 after 01-01 completion (RUNNER-01, GROUP-01, GROUP-02 complete)*
+*Last updated: 2026-03-03 after 01-03 completion — Phase 1 complete. RUNNER-01, RUNNER-04, GROUP-01, GROUP-02 all complete.*
