@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # NanoHaro
 
 Personal Claude assistant, forked from [NanoClaw](https://github.com/qwibitai/NanoClaw). See [README.md](README.md) for philosophy and setup. See [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for architecture decisions.
@@ -62,3 +66,29 @@ systemctl --user restart nanoclaw
 ## Container Build Cache
 
 The container buildkit caches the build context aggressively. `--no-cache` alone does NOT invalidate COPY steps — the builder's volume retains stale files. To force a truly clean rebuild, prune the builder then re-run `./container/build.sh`.
+
+## GSD Commit Rules
+
+GSD 提交时 commit message **标题和 body 都必须用中文**，且 **必须有 body**，不能只有标题行：
+
+```
+feat(01-01): 实现进程内 agent runner
+
+- 用 claude-agent-sdk 替换 container-runner，移除 Docker 依赖
+- Session 通过 group name 隔离，持久化到 SQLite
+- 关键 pitfall: await using 语法需 TypeScript 5.2+
+```
+
+body 需包含：具体改了什么、关键技术决策、重要 pitfall。规划类 commit（research、plan）同样需要写 body，记录核心发现或计划要点。
+
+## 并行任务
+
+执行可以并行的任务时（如同时研究多个模块、并行实现多个独立功能），考虑使用 TeamCreate + Agent 创建 agent teams 来并行推进，提升效率。
+
+## GSD Tools 路径
+
+`gsd-tools.cjs` 在项目本地，不在全局 `~/.claude/`：
+
+```bash
+node "/Users/levi/Projects/nanoharo/.claude/get-shit-done/bin/gsd-tools.cjs" <command>
+```
