@@ -27,11 +27,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. follow-up 消息（IPC）在进程内直接传递给活跃的 agent，无文件轮询
   3. 不同 group 的 agent 以各自 `groups/{name}/` 为 cwd 运行，互不干扰
   4. session 数据写入 `data/sessions/{group}/`，重启后可恢复
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — 新建 src/agent-runner.ts（V2 SDK session 核心 wrapper）
+- [ ] 01-02-PLAN.md — 改造 GroupQueue（SDKSession 替换 ChildProcess，内存 follow-up 队列）+ ipc.ts 清理
+- [ ] 01-03-PLAN.md — 改造 index.ts 和 task-scheduler.ts 完成端到端接入
 
 ### Phase 2: Container Layer Removal
 **Goal**: 容器相关代码全部删除，代码库中不再有 Docker/容器运行时的残留
@@ -65,6 +66,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. In-process Agent Runner | 0/? | Not started | - |
+| 1. In-process Agent Runner | 0/3 | Planned | - |
 | 2. Container Layer Removal | 0/? | Not started | - |
 | 3. Single-Image Deployment | 0/? | Not started | - |
