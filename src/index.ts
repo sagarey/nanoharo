@@ -300,8 +300,9 @@ async function runAgent(
         isMain,
         assistantName: ASSISTANT_NAME,
       },
-      (proc, containerName) =>
-        queue.registerProcess(chatJid, proc, containerName, group.folder),
+      (_proc, _containerName) => {
+        // registerProcess removed — container path will be deleted in Phase 2
+      },
       wrappedOnOutput,
     );
 
@@ -484,8 +485,9 @@ async function main(): Promise<void> {
     registeredGroups: () => registeredGroups,
     getSessions: () => sessions,
     queue,
-    onProcess: (groupJid, proc, containerName, groupFolder) =>
-      queue.registerProcess(groupJid, proc, containerName, groupFolder),
+    onProcess: (_groupJid, _proc, _containerName, _groupFolder) => {
+      // registerProcess removed — container path will be deleted in Phase 2
+    },
     sendMessage: async (jid, rawText) => {
       const channel = findChannel(channels, jid);
       if (!channel) {

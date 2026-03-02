@@ -1,8 +1,6 @@
-import { ChildProcess } from 'child_process';
-import fs from 'fs';
-import path from 'path';
+import type { SDKSession } from '@anthropic-ai/claude-agent-sdk';
 
-import { DATA_DIR, MAX_CONCURRENT_CONTAINERS } from './config.js';
+import { MAX_CONCURRENT_CONTAINERS } from './config.js';
 import { logger } from './logger.js';
 
 interface QueuedTask {
@@ -20,8 +18,8 @@ interface GroupState {
   isTaskContainer: boolean;
   pendingMessages: boolean;
   pendingTasks: QueuedTask[];
-  process: ChildProcess | null;
-  containerName: string | null;
+  session: SDKSession | null;
+  pendingFollowUps: string[];
   groupFolder: string | null;
   retryCount: number;
 }
@@ -43,8 +41,8 @@ export class GroupQueue {
         isTaskContainer: false,
         pendingMessages: false,
         pendingTasks: [],
-        process: null,
-        containerName: null,
+        session: null,
+        pendingFollowUps: [],
         groupFolder: null,
         retryCount: 0,
       };
@@ -64,7 +62,7 @@ export class GroupQueue {
 
     if (state.active) {
       state.pendingMessages = true;
-      logger.debug({ groupJid }, 'Container active, message queued');
+      logger.debug({ groupJid }, 'Agent active, message queued');
       return;
     }
 
@@ -101,7 +99,7 @@ export class GroupQueue {
       if (state.idleWaiting) {
         this.closeStdin(groupJid);
       }
-      logger.debug({ groupJid, taskId }, 'Container active, task queued');
+      logger.debug({ groupJid, taskId }, 'Agent active, task queued');
       return;
     }
 
@@ -123,21 +121,15 @@ export class GroupQueue {
     );
   }
 
-  registerProcess(
-    groupJid: string,
-    proc: ChildProcess,
-    containerName: string,
-    groupFolder?: string,
-  ): void {
+  registerSession(groupJid: string, session: SDKSession, groupFolder?: string): void {
     const state = this.getGroup(groupJid);
-    state.process = proc;
-    state.containerName = containerName;
+    state.session = session;
     if (groupFolder) state.groupFolder = groupFolder;
   }
 
   /**
-   * Mark the container as idle-waiting (finished work, waiting for IPC input).
-   * If tasks are pending, preempt the idle container immediately.
+   * Mark the agent as idle-waiting (finished work, waiting for follow-up).
+   * If tasks are pending, preempt the idle agent immediately.
    */
   notifyIdle(groupJid: string): void {
     const state = this.getGroup(groupJid);
@@ -148,43 +140,24 @@ export class GroupQueue {
   }
 
   /**
-   * Send a follow-up message to the active container via IPC file.
-   * Returns true if the message was written, false if no active container.
+   * Send a follow-up message to the active agent via in-memory queue.
+   * Returns true if the message was queued, false if no active agent.
    */
   sendMessage(groupJid: string, text: string): boolean {
     const state = this.getGroup(groupJid);
-    if (!state.active || !state.groupFolder || state.isTaskContainer)
-      return false;
+    if (!state.active || state.isTaskContainer) return false;
     state.idleWaiting = false; // Agent is about to receive work, no longer idle
-
-    const inputDir = path.join(DATA_DIR, 'ipc', state.groupFolder, 'input');
-    try {
-      fs.mkdirSync(inputDir, { recursive: true });
-      const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}.json`;
-      const filepath = path.join(inputDir, filename);
-      const tempPath = `${filepath}.tmp`;
-      fs.writeFileSync(tempPath, JSON.stringify({ type: 'message', text }));
-      fs.renameSync(tempPath, filepath);
-      return true;
-    } catch {
-      return false;
-    }
+    state.pendingFollowUps.push(text);
+    return true;
   }
 
   /**
-   * Signal the active container to wind down by writing a close sentinel.
+   * Signal the active agent to wind down by closing its session.
    */
   closeStdin(groupJid: string): void {
     const state = this.getGroup(groupJid);
-    if (!state.active || !state.groupFolder) return;
-
-    const inputDir = path.join(DATA_DIR, 'ipc', state.groupFolder, 'input');
-    try {
-      fs.mkdirSync(inputDir, { recursive: true });
-      fs.writeFileSync(path.join(inputDir, '_close'), '');
-    } catch {
-      // ignore
-    }
+    if (!state.active || !state.session) return;
+    state.session.close();
   }
 
   private async runForGroup(
@@ -200,7 +173,7 @@ export class GroupQueue {
 
     logger.debug(
       { groupJid, reason, activeCount: this.activeCount },
-      'Starting container for group',
+      'Starting agent for group',
     );
 
     try {
@@ -217,8 +190,7 @@ export class GroupQueue {
       this.scheduleRetry(groupJid, state);
     } finally {
       state.active = false;
-      state.process = null;
-      state.containerName = null;
+      state.session = null;
       state.groupFolder = null;
       this.activeCount--;
       this.drainGroup(groupJid);
@@ -244,8 +216,7 @@ export class GroupQueue {
     } finally {
       state.active = false;
       state.isTaskContainer = false;
-      state.process = null;
-      state.containerName = null;
+      state.session = null;
       state.groupFolder = null;
       this.activeCount--;
       this.drainGroup(groupJid);
@@ -339,19 +310,17 @@ export class GroupQueue {
   async shutdown(_gracePeriodMs: number): Promise<void> {
     this.shuttingDown = true;
 
-    // Count active containers but don't kill them — they'll finish on their own
-    // via idle timeout or container timeout. The --rm flag cleans them up on exit.
-    // This prevents WhatsApp reconnection restarts from killing working agents.
-    const activeContainers: string[] = [];
+    const activeSessions: string[] = [];
     for (const [jid, state] of this.groups) {
-      if (state.process && !state.process.killed && state.containerName) {
-        activeContainers.push(state.containerName);
+      if (state.session) {
+        activeSessions.push(jid);
+        state.session.close();
       }
     }
 
     logger.info(
-      { activeCount: this.activeCount, detachedContainers: activeContainers },
-      'GroupQueue shutting down (containers detached, not killed)',
+      { activeCount: this.activeCount, closedSessions: activeSessions.length },
+      'GroupQueue shutting down (sessions closed)',
     );
   }
 }
