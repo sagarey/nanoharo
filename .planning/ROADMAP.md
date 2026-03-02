@@ -66,6 +66,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. In-process Agent Runner | 1/3 | In progress | - |
+| 1. In-process Agent Runner | 2/3 | In Progress|  |
 | 2. Container Layer Removal | 0/? | Not started | - |
 | 3. Single-Image Deployment | 0/? | Not started | - |
