@@ -1,6 +1,10 @@
-# NanoClaw
+# NanoHaro
 
-Personal Claude assistant. See [README.md](README.md) for philosophy and setup. See [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for architecture decisions.
+Personal Claude assistant, forked from [NanoClaw](https://github.com/qwibitai/NanoClaw). See [README.md](README.md) for philosophy and setup. See [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for architecture decisions.
+
+## About This Fork
+
+**NanoHaro** — named after Haro, the small round companion robot from the Gundam series. Loyal, always ready, always on standby. A personal customization of NanoClaw.
 
 ## Quick Context
 
