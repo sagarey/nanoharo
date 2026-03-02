@@ -38,19 +38,19 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RUNNER-01 | Phase 1 | Pending |
-| RUNNER-02 | Phase 1 | Pending |
-| RUNNER-03 | Phase 1 | Pending |
-| RUNNER-04 | Phase 1 | Pending |
-| GROUP-01 | Phase 1 | Pending |
-| GROUP-02 | Phase 1 | Pending |
-| DEPLOY-01 | Phase 2 | Pending |
+| RUNNER-01 | Phase 1: In-process Agent Runner | Pending |
+| RUNNER-04 | Phase 1: In-process Agent Runner | Pending |
+| GROUP-01 | Phase 1: In-process Agent Runner | Pending |
+| GROUP-02 | Phase 1: In-process Agent Runner | Pending |
+| RUNNER-02 | Phase 2: Container Layer Removal | Pending |
+| RUNNER-03 | Phase 2: Container Layer Removal | Pending |
+| DEPLOY-01 | Phase 3: Single-Image Deployment | Pending |
 
 **Coverage:**
 - v1 requirements: 7 total
 - Mapped to phases: 7
-- Unmapped: 0 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-03*
-*Last updated: 2026-03-03 after initial definition*
+*Last updated: 2026-03-03 after roadmap creation*
