@@ -54,10 +54,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. 主 Dockerfile 构建成功，镜像包含 Node.js 运行时和 `@anthropic-ai/claude-agent-sdk` 依赖
   2. `docker run` 启动后服务正常接收 WhatsApp 消息并通过 SDK 回复
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — 创建多阶段 Dockerfile（builder 编译 native modules，runner 含运行时）和 .dockerignore
 
 ## Progress
 
@@ -68,4 +68,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. In-process Agent Runner | 3/3 | Complete | 2026-03-03 |
 | 2. Container Layer Removal | 0/1 | Not started | - |
-| 3. Single-Image Deployment | 0/? | Not started | - |
+| 3. Single-Image Deployment | 0/1 | Not started | - |
