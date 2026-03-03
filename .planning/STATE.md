@@ -64,6 +64,12 @@ None yet.
 
 None yet.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | 更新 README 和关联文件 | 2026-03-03 | 7777110 | [1-readme](.planning/quick/1-readme/) |
+
 ## Session Continuity
 
 Last session: 2026-03-03
