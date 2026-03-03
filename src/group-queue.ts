@@ -30,6 +30,9 @@ export class GroupQueue {
   private waitingGroups: string[] = [];
   private processMessagesFn: ((groupJid: string) => Promise<boolean>) | null =
     null;
+  private drainFollowUpsFn:
+    | ((groupJid: string, text: string) => Promise<void>)
+    | null = null;
   private shuttingDown = false;
 
   private getGroup(groupJid: string): GroupState {
@@ -53,6 +56,16 @@ export class GroupQueue {
 
   setProcessMessagesFn(fn: (groupJid: string) => Promise<boolean>): void {
     this.processMessagesFn = fn;
+  }
+
+  /**
+   * Register a callback to receive assistant text output from follow-up drain turns.
+   * Called once per text chunk emitted by the SDK during a drain iteration.
+   */
+  setDrainFollowUpsFn(
+    fn: (groupJid: string, text: string) => Promise<void>,
+  ): void {
+    this.drainFollowUpsFn = fn;
   }
 
   enqueueMessageCheck(groupJid: string): void {
@@ -121,7 +134,11 @@ export class GroupQueue {
     );
   }
 
-  registerSession(groupJid: string, session: SDKSession, groupFolder?: string): void {
+  registerSession(
+    groupJid: string,
+    session: SDKSession,
+    groupFolder?: string,
+  ): void {
     const state = this.getGroup(groupJid);
     state.session = session;
     if (groupFolder) state.groupFolder = groupFolder;
@@ -185,6 +202,9 @@ export class GroupQueue {
           this.scheduleRetry(groupJid, state);
         }
       }
+      // Drain any follow-up messages that arrived while the primary turn was
+      // running. Must execute BEFORE the finally block nulls state.session.
+      await this.drainFollowUps(groupJid, state);
     } catch (err) {
       logger.error({ groupJid, err }, 'Error processing messages for group');
       this.scheduleRetry(groupJid, state);
@@ -244,6 +264,57 @@ export class GroupQueue {
         this.enqueueMessageCheck(groupJid);
       }
     }, delayMs);
+  }
+
+  /**
+   * Consume all messages queued in pendingFollowUps[] by sending them to
+   * the already-open SDK session.  Must be called before the finally block
+   * closes the session.
+   *
+   * Uses splice(0) to atomically take all items at each iteration, so any
+   * new messages pushed by sendMessage() during streaming are picked up on
+   * the next while-pass without a separate loop.
+   *
+   * Errors: stop the loop without re-throwing — runForGroup must not fail
+   * due to a drain error.
+   */
+  private async drainFollowUps(
+    groupJid: string,
+    state: GroupState,
+  ): Promise<void> {
+    while (state.pendingFollowUps.length > 0 && state.session) {
+      const msgs = state.pendingFollowUps.splice(0);
+      const combined = msgs.join('\n\n');
+      logger.debug(
+        { groupJid, msgCount: msgs.length },
+        'Draining follow-up messages',
+      );
+      try {
+        await state.session.send(combined);
+        for await (const msg of state.session.stream()) {
+          if (msg.type === 'assistant') {
+            const text = (
+              msg.message.content as Array<{ type: string; text?: string }>
+            )
+              .filter(
+                (b): b is { type: 'text'; text: string } => b.type === 'text',
+              )
+              .map((b) => b.text)
+              .join('');
+            if (text && this.drainFollowUpsFn) {
+              await this.drainFollowUpsFn(groupJid, text);
+            }
+          }
+          if (msg.type === 'result') break;
+        }
+      } catch (err) {
+        logger.error(
+          { groupJid, err },
+          'Error draining follow-up, stopping drain',
+        );
+        break;
+      }
+    }
   }
 
   private drainGroup(groupJid: string): void {
