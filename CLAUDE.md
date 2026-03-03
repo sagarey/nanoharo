@@ -12,7 +12,7 @@ Personal Claude assistant, forked from [NanoClaw](https://github.com/qwibitai/Na
 
 ## Quick Context
 
-Single Node.js process that connects to WhatsApp, routes messages to Claude Agent SDK running in containers (Linux VMs). Each group has isolated filesystem and memory.
+Single Node.js process that connects to WhatsApp, runs Claude Agent SDK in-process. Each group has isolated directory (`groups/{name}/`) and memory (`CLAUDE_HOME`). No nested container layer.
 
 ## Key Files
 
@@ -23,11 +23,11 @@ Single Node.js process that connects to WhatsApp, routes messages to Claude Agen
 | `src/ipc.ts` | IPC watcher and task processing |
 | `src/router.ts` | Message formatting and outbound routing |
 | `src/config.ts` | Trigger pattern, paths, intervals |
-| `src/container-runner.ts` | Spawns agent containers with mounts |
+| `src/agent-runner.ts` | In-process Claude Agent SDK runner (V2 sessions) |
+| `src/group-queue.ts` | Per-group message queue with SDKSession handles |
 | `src/task-scheduler.ts` | Runs scheduled tasks |
 | `src/db.ts` | SQLite operations |
 | `groups/{name}/CLAUDE.md` | Per-group memory (isolated) |
-| `container/skills/agent-browser.md` | Browser automation tool (available to all agents via Bash) |
 
 ## Skills
 
@@ -47,7 +47,6 @@ Run commands directly—don't tell the user to run them.
 ```bash
 npm run dev          # Run with hot reload
 npm run build        # Compile TypeScript
-./container/build.sh # Rebuild agent container
 ```
 
 Service management:
@@ -62,10 +61,6 @@ systemctl --user start nanoclaw
 systemctl --user stop nanoclaw
 systemctl --user restart nanoclaw
 ```
-
-## Container Build Cache
-
-The container buildkit caches the build context aggressively. `--no-cache` alone does NOT invalidate COPY steps — the builder's volume retains stale files. To force a truly clean rebuild, prune the builder then re-run `./container/build.sh`.
 
 ## GSD Commit Rules
 
@@ -90,5 +85,5 @@ body 需包含：具体改了什么、关键技术决策、重要 pitfall。规�
 `gsd-tools.cjs` 在项目本地，不在全局 `~/.claude/`：
 
 ```bash
-node "/Users/levi/Projects/nanoharo/.claude/get-shit-done/bin/gsd-tools.cjs" <command>
+node "$PWD/.claude/get-shit-done/bin/gsd-tools.cjs" <command>
 ```
