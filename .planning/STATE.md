@@ -2,14 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: complete
-last_updated: "2026-03-03T04:05:00Z"
-verification: approved
+status: unknown
+last_updated: "2026-03-03T06:41:59.118Z"
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 5
-  completed_plans: 5
+  total_phases: 4
+  completed_phases: 4
+  total_plans: 6
+  completed_plans: 6
 ---
 
 # Project State
@@ -19,14 +18,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-03)
 
 **Core value:** WhatsApp 消息进来，Claude 回复出去——中间没有多余的进程层
-**Current focus:** Phase 3 - Single Image Deployment — COMPLETE
+**Current focus:** Phase 4 - Follow-up Drain Consumer — COMPLETE
 
 ## Current Position
 
-Phase: 3 of 3 (Single Image Deployment) — COMPLETE
+Phase: 4 of 4 (Follow-up Drain Consumer) — COMPLETE
 Plan: 1 of 1 in current phase — COMPLETE
-Status: ALL PHASES COMPLETE — milestone v1.0 reached
-Last activity: 2026-03-03 — Plan 03-01 complete
+Status: ALL PHASES COMPLETE — RUNNER-04 audit gap closed
+Last activity: 2026-03-03 — Plan 04-01 complete
 
 Progress: [██████████] 100%
 
@@ -44,9 +43,10 @@ Progress: [██████████] 100%
 | 01-in-process-agent-runner | 3 | 33 min | 11 min |
 | 02-container-layer-removal | 1 | 3 min | 3 min |
 | 03-single-image-deployment | 1 | 18 min | 18 min |
+| 04-follow-up-drain-consumer | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (25 min), 01-02 (3 min), 01-03 (5 min), 02-01 (3 min), 03-01 (18 min)
+- Last 5 plans: 01-02 (3 min), 01-03 (5 min), 02-01 (3 min), 03-01 (18 min), 04-01 (3 min)
 - Trend: stable
 
 *Updated after each plan completion*
@@ -73,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 03-01]: builder stage 不设 NODE_ENV=production，显式 --omit=dev 避免 npm ci 行为差异
 - [Phase 03-01]: 不添加 EXPOSE/HEALTHCHECK——服务无 HTTP 端口，WhatsApp 连接难以 HTTP 检测
 - [Phase 03-01]: *.md 全量排除出 .dockerignore，groups/main 预创建占位供 bind mount 覆盖
+- [Phase 04-01]: splice(0) 原子取出 pendingFollowUps，避免与并发 sendMessage() 竞争
+- [Phase 04-01]: drain 在 try 块内 processMessagesFn 之后执行，finally 之前 session 仍然有效
+- [Phase 04-01]: setDrainFollowUpsFn setter — GroupQueue 保持 channel 无关，路由由 index.ts 注入
 
 ### Pending Todos
 
@@ -85,5 +88,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: Completed 03-01-PLAN.md (单镜像部署，Phase 3 完成，milestone v1.0 达成)
+Stopped at: Completed 04-01-PLAN.md (drain 消费者，Phase 4 完成，RUNNER-04 gap 关闭)
 Resume file: None

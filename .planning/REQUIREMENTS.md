@@ -10,7 +10,7 @@
 - [x] **RUNNER-01**: 用 `@anthropic-ai/claude-agent-sdk` `query()` 直接在主进程内替代 `runContainerAgent()`
 - [x] **RUNNER-02**: 删除 `src/container-runner.ts`、`src/container-runtime.ts`、`src/mount-security.ts`
 - [x] **RUNNER-03**: 删除 `container/` 目录（Dockerfile、agent-runner、skills、build.sh）
-- [ ] **RUNNER-04**: IPC follow-up 消息机制改为进程内直接传递，去掉文件轮询
+- [x] **RUNNER-04**: IPC follow-up 消息机制改为进程内直接传递，去掉文件轮询
 
 ### Group
 
@@ -39,7 +39,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | RUNNER-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
-| RUNNER-04 | Phase 4: Follow-up Drain Consumer | Pending |
+| RUNNER-04 | Phase 4: Follow-up Drain Consumer | Complete |
 | GROUP-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | GROUP-02 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | RUNNER-02 | Phase 2: Container Layer Removal | Complete |
@@ -50,8 +50,8 @@
 - v1 requirements: 7 total
 - Mapped to phases: 7
 - Unmapped: 0
-- Pending (gap closure): 1 (RUNNER-04)
+- Pending (gap closure): 0
 
 ---
 *Requirements defined: 2026-03-03*
-*Last updated: 2026-03-03 after 01-03 completion — Phase 1 complete. RUNNER-01, RUNNER-04, GROUP-01, GROUP-02 all complete.*
+*Last updated: 2026-03-03 after 04-01 completion — Phase 4 complete. All v1 requirements satisfied.*

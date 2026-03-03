@@ -68,7 +68,10 @@ Plans:
   1. 用户在 agent 处理消息期间发送的追加消息，在当前 turn 结束后被正确传递给 Claude SDK
   2. `state.pendingFollowUps` 数组在 `runForGroup` 中有对应的 drain 消费循环
   3. follow-up 消息通过 `session.send()` 或等效的 multi-turn API 送达，不再被静默丢弃
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [x] 04-01-PLAN.md — 在 GroupQueue 加入 drainFollowUps() 消费者，新增 4 条单元测试，index.ts 注册输出回调
 
 ## Progress
 
@@ -80,4 +83,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. In-process Agent Runner | 3/3 | Complete | 2026-03-03 |
 | 2. Container Layer Removal | 1/1 | Complete | 2026-03-03 |
 | 3. Single-Image Deployment | 1/1 | Complete | 2026-03-03 |
-| 4. Follow-up Drain Consumer | 0/? | Pending | — |
+| 4. Follow-up Drain Consumer | 1/1 | Complete | 2026-03-03 |
