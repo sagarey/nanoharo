@@ -13,8 +13,8 @@
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: In-process Agent Runner** - 用 SDK query() 替代容器调用，IPC 改为进程内传递，group 隔离改为目录级
-- [ ] **Phase 2: Container Layer Removal** - 删除所有容器相关代码和文件
-- [ ] **Phase 3: Single-Image Deployment** - 构建整个服务的主 Dockerfile
+- [x] **Phase 2: Container Layer Removal** - 删除所有容器相关代码和文件
+- [x] **Phase 3: Single-Image Deployment** - 构建整个服务的主 Dockerfile
 
 ## Phase Details
 
@@ -45,7 +45,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md — 迁移 survivor 符号到 agent-runner.ts，修复 import 路径，删除全部容器文件
+- [x] 02-01-PLAN.md — 迁移 survivor 符号到 agent-runner.ts，修复 import 路径，删除全部容器文件
 
 ### Phase 3: Single-Image Deployment
 **Goal**: 整个 NanoHaro 服务打包为一个 Docker 镜像，可直接 `docker run` 启动
@@ -57,7 +57,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 03-01-PLAN.md — 创建多阶段 Dockerfile（builder 编译 native modules，runner 含运行时）和 .dockerignore
+- [x] 03-01-PLAN.md — 创建多阶段 Dockerfile（builder 编译 native modules，runner 含运行时）和 .dockerignore
 
 ## Progress
 
@@ -67,5 +67,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. In-process Agent Runner | 3/3 | Complete | 2026-03-03 |
-| 2. Container Layer Removal | 0/1 | Not started | - |
-| 3. Single-Image Deployment | 0/1 | Not started | - |
+| 2. Container Layer Removal | 1/1 | Complete | 2026-03-03 |
+| 3. Single-Image Deployment | 1/1 | Complete | 2026-03-03 |

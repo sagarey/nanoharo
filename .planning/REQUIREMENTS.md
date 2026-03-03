@@ -19,7 +19,7 @@
 
 ### Deploy
 
-- [ ] **DEPLOY-01**: 主 Dockerfile 构建整个 NanoHaro 服务（含 SDK 依赖，不含嵌套容器运行时）
+- [x] **DEPLOY-01**: 主 Dockerfile 构建整个 NanoHaro 服务（含 SDK 依赖，不含嵌套容器运行时）
 
 ## v2 Requirements
 
@@ -44,7 +44,7 @@
 | GROUP-02 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | RUNNER-02 | Phase 2: Container Layer Removal | Complete |
 | RUNNER-03 | Phase 2: Container Layer Removal | Complete |
-| DEPLOY-01 | Phase 3: Single-Image Deployment | Pending |
+| DEPLOY-01 | Phase 3: Single-Image Deployment | Complete |
 
 **Coverage:**
 - v1 requirements: 7 total

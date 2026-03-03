@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-03-03T02:51:52.896Z"
+status: complete
+last_updated: "2026-03-03T03:48:00Z"
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 5
+  completed_plans: 5
 ---
 
 # Project State
@@ -18,16 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-03)
 
 **Core value:** WhatsApp 消息进来，Claude 回复出去——中间没有多余的进程层
-**Current focus:** Phase 2 - Container Layer Removal
+**Current focus:** Phase 3 - Single Image Deployment — COMPLETE
 
 ## Current Position
 
-Phase: 2 of 3 (Container Layer Removal) — COMPLETE
+Phase: 3 of 3 (Single Image Deployment) — COMPLETE
 Plan: 1 of 1 in current phase — COMPLETE
-Status: Phase 2 complete, ready for Phase 3
-Last activity: 2026-03-03 — Plan 02-01 complete
+Status: ALL PHASES COMPLETE — milestone v1.0 reached
+Last activity: 2026-03-03 — Plan 03-01 complete
 
-Progress: [██████░░░░] 67%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -42,10 +42,11 @@ Progress: [██████░░░░] 67%
 |-------|-------|-------|----------|
 | 01-in-process-agent-runner | 3 | 33 min | 11 min |
 | 02-container-layer-removal | 1 | 3 min | 3 min |
+| 03-single-image-deployment | 1 | 18 min | 18 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (25 min), 01-02 (3 min), 01-03 (5 min), 02-01 (3 min)
-- Trend: accelerating
+- Last 5 plans: 01-01 (25 min), 01-02 (3 min), 01-03 (5 min), 02-01 (3 min), 03-01 (18 min)
+- Trend: stable
 
 *Updated after each plan completion*
 
@@ -67,6 +68,10 @@ Recent decisions affecting current work:
 - [Phase 01-03]: writeGroupsSnapshot/writeTasksSnapshot 保留至 Phase 2 统一清理容器相关代码
 - [Phase 02-01]: snapshot helpers 追加到 agent-runner.ts 末尾，不新建文件——保持模块数量最小化
 - [Phase 02-01]: container/ 目录全量删除，Phase 3 按需重建 Dockerfile，不迁移任何内容
+- [Phase 03-01]: node:20-slim 两阶段构建——builder stage 编译 better-sqlite3 native module，runner stage 只含生产产物
+- [Phase 03-01]: builder stage 不设 NODE_ENV=production，显式 --omit=dev 避免 npm ci 行为差异
+- [Phase 03-01]: 不添加 EXPOSE/HEALTHCHECK——服务无 HTTP 端口，WhatsApp 连接难以 HTTP 检测
+- [Phase 03-01]: *.md 全量排除出 .dockerignore，groups/main 预创建占位供 bind mount 覆盖
 
 ### Pending Todos
 
@@ -79,5 +84,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: Completed 02-01-PLAN.md (容器层删除，Phase 2 完成)
+Stopped at: Completed 03-01-PLAN.md (单镜像部署，Phase 3 完成，milestone v1.0 达成)
 Resume file: None
