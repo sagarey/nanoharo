@@ -67,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: v1.0 milestone archived — ready for next milestone
+Stopped at: quick task 1 (quick-1-readme) complete — README/docs 去容器化文档更新完毕
 Resume file: None
