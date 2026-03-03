@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-03-02T19:22:40.645Z"
+last_updated: "2026-03-03T02:46:20.076Z"
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_phases: 2
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 4
 ---
 
 # Project State
@@ -18,17 +18,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-03)
 
 **Core value:** WhatsApp 消息进来，Claude 回复出去——中间没有多余的进程层
-**Current focus:** Phase 1 - In-process Agent Runner
+**Current focus:** Phase 2 - Container Layer Removal
 
 ## Current Position
 
-Phase: 1 of 3 (In-process Agent Runner)
-Phase: 1 of 3 (In-process Agent Runner) — COMPLETE
-Plan: 3 of 3 in current phase — COMPLETE
-Status: Phase 1 complete, ready for Phase 2
-Last activity: 2026-03-03 — Plan 01-03 complete
+Phase: 2 of 3 (Container Layer Removal) — COMPLETE
+Plan: 1 of 1 in current phase — COMPLETE
+Status: Phase 2 complete, ready for Phase 3
+Last activity: 2026-03-03 — Plan 02-01 complete
 
-Progress: [███░░░░░░░] 33%
+Progress: [██████░░░░] 67%
 
 ## Performance Metrics
 
@@ -42,9 +41,10 @@ Progress: [███░░░░░░░] 33%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-in-process-agent-runner | 3 | 33 min | 11 min |
+| 02-container-layer-removal | 1 | 3 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (25 min), 01-02 (3 min), 01-03 (5 min)
+- Last 5 plans: 01-01 (25 min), 01-02 (3 min), 01-03 (5 min), 02-01 (3 min)
 - Trend: accelerating
 
 *Updated after each plan completion*
@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - [Phase 01-02]: ipc.ts 无需修改——从未扫描 input/ 目录，RUNNER-04 的写入侧已由 GroupQueue 改造完成
 - [Phase 01-03]: scheduleClose/closeTimer 逻辑删除——V2 session.stream() 在 turn 结束后自然返回，不需要定时器强制关闭
 - [Phase 01-03]: writeGroupsSnapshot/writeTasksSnapshot 保留至 Phase 2 统一清理容器相关代码
+- [Phase 02-01]: snapshot helpers 追加到 agent-runner.ts 末尾，不新建文件——保持模块数量最小化
+- [Phase 02-01]: container/ 目录全量删除，Phase 3 按需重建 Dockerfile，不迁移任何内容
 
 ### Pending Todos
 
@@ -77,5 +79,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-03
-Stopped at: Completed 01-03-PLAN.md (接入层改造，Phase 1 完成)
+Stopped at: Completed 02-01-PLAN.md (容器层删除，Phase 2 完成)
 Resume file: None

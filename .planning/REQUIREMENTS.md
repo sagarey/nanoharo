@@ -8,8 +8,8 @@
 ### Runner
 
 - [x] **RUNNER-01**: 用 `@anthropic-ai/claude-agent-sdk` `query()` 直接在主进程内替代 `runContainerAgent()`
-- [ ] **RUNNER-02**: 删除 `src/container-runner.ts`、`src/container-runtime.ts`、`src/mount-security.ts`
-- [ ] **RUNNER-03**: 删除 `container/` 目录（Dockerfile、agent-runner、skills、build.sh）
+- [x] **RUNNER-02**: 删除 `src/container-runner.ts`、`src/container-runtime.ts`、`src/mount-security.ts`
+- [x] **RUNNER-03**: 删除 `container/` 目录（Dockerfile、agent-runner、skills、build.sh）
 - [x] **RUNNER-04**: IPC follow-up 消息机制改为进程内直接传递，去掉文件轮询
 
 ### Group
@@ -42,8 +42,8 @@
 | RUNNER-04 | Phase 1: In-process Agent Runner | Complete (01-02, 01-03) |
 | GROUP-01 | Phase 1: In-process Agent Runner | Complete (01-01) |
 | GROUP-02 | Phase 1: In-process Agent Runner | Complete (01-01) |
-| RUNNER-02 | Phase 2: Container Layer Removal | Pending |
-| RUNNER-03 | Phase 2: Container Layer Removal | Pending |
+| RUNNER-02 | Phase 2: Container Layer Removal | Complete |
+| RUNNER-03 | Phase 2: Container Layer Removal | Complete |
 | DEPLOY-01 | Phase 3: Single-Image Deployment | Pending |
 
 **Coverage:**
