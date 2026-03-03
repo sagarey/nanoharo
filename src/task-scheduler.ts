@@ -8,8 +8,7 @@ import {
   SCHEDULER_POLL_INTERVAL,
   TIMEZONE,
 } from './config.js';
-import { AgentOutput, runInProcessAgent } from './agent-runner.js';
-import { writeTasksSnapshot } from './container-runner.js';
+import { AgentOutput, runInProcessAgent, writeTasksSnapshot } from './agent-runner.js';
 import {
   getAllTasks,
   getDueTasks,
@@ -27,7 +26,11 @@ export interface SchedulerDependencies {
   registeredGroups: () => Record<string, RegisteredGroup>;
   getSessions: () => Record<string, string>;
   queue: GroupQueue;
-  onSession: (groupJid: string, session: SDKSession, groupFolder: string) => void;
+  onSession: (
+    groupJid: string,
+    session: SDKSession,
+    groupFolder: string,
+  ) => void;
   sendMessage: (jid: string, text: string) => Promise<void>;
 }
 

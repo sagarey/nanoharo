@@ -9,11 +9,7 @@ import {
   TRIGGER_PATTERN,
 } from './config.js';
 import { WhatsAppChannel } from './channels/whatsapp.js';
-import { AgentOutput, runInProcessAgent } from './agent-runner.js';
-import {
-  writeGroupsSnapshot,
-  writeTasksSnapshot,
-} from './container-runner.js';
+import { AgentOutput, runInProcessAgent, writeGroupsSnapshot, writeTasksSnapshot } from './agent-runner.js';
 import {
   getAllChats,
   getAllRegisteredGroups,
@@ -100,7 +96,7 @@ function registerGroup(jid: string, group: RegisteredGroup): void {
  * Get available groups list for the agent.
  * Returns groups ordered by most recent activity.
  */
-export function getAvailableGroups(): import('./container-runner.js').AvailableGroup[] {
+export function getAvailableGroups(): import('./agent-runner.js').AvailableGroup[] {
   const chats = getAllChats();
   const registeredJids = new Set(Object.keys(registeredGroups));
 
@@ -305,10 +301,7 @@ async function runAgent(
     }
 
     if (output.status === 'error') {
-      logger.error(
-        { group: group.name, error: output.error },
-        'Agent error',
-      );
+      logger.error({ group: group.name, error: output.error }, 'Agent error');
       return 'error';
     }
 

@@ -8,6 +8,7 @@
  * Interface is intentionally aligned with ContainerInput/ContainerOutput so that
  * index.ts and task-scheduler.ts require minimal changes.
  */
+import fs from 'fs';
 import path from 'path';
 
 import {
@@ -19,6 +20,7 @@ import {
 
 import { DATA_DIR, GROUPS_DIR, MAIN_GROUP_FOLDER } from './config.js';
 import { readEnvFile } from './env.js';
+import { resolveGroupIpcPath } from './group-folder.js';
 import { logger } from './logger.js';
 import { type RegisteredGroup } from './types.js';
 
@@ -74,7 +76,8 @@ export async function runInProcessAgent(
   // Read API key from .env — never modify process.env to avoid concurrent
   // group race conditions (Pitfall 2 from RESEARCH.md).
   const secrets = readEnvFile(['ANTHROPIC_API_KEY', 'CLAUDE_CODE_OAUTH_TOKEN']);
-  const apiKey = secrets.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY ?? '';
+  const apiKey =
+    secrets.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY ?? '';
 
   // cwd rule: main group uses project root, all other groups use their folder.
   // This mirrors the container mount layout (container-runner.ts):
@@ -130,7 +133,9 @@ export async function runInProcessAgent(
       if (msg.type === 'assistant') {
         // Extract all text content blocks and concatenate them.
         // msg.message is a BetaMessage whose content is an array of blocks.
-        const text = (msg.message.content as Array<{ type: string; text?: string }>)
+        const text = (
+          msg.message.content as Array<{ type: string; text?: string }>
+        )
           .filter((b): b is { type: 'text'; text: string } => b.type === 'text')
           .map((b) => b.text)
           .join('');
@@ -188,3 +193,50 @@ export type { SDKSession };
 
 // Export MAIN_GROUP_FOLDER for convenience (callers checking isMain logic).
 export { MAIN_GROUP_FOLDER };
+
+// --- Snapshot helpers (migrated from container-runner.ts) ---
+
+export interface AvailableGroup {
+  jid: string;
+  name: string;
+  lastActivity: string;
+  isRegistered: boolean;
+}
+
+export function writeTasksSnapshot(
+  groupFolder: string,
+  isMain: boolean,
+  tasks: Array<{
+    id: string;
+    groupFolder: string;
+    prompt: string;
+    schedule_type: string;
+    schedule_value: string;
+    status: string;
+    next_run: string | null;
+  }>,
+): void {
+  const groupIpcDir = resolveGroupIpcPath(groupFolder);
+  fs.mkdirSync(groupIpcDir, { recursive: true });
+  const filteredTasks = isMain
+    ? tasks
+    : tasks.filter((t) => t.groupFolder === groupFolder);
+  const tasksFile = path.join(groupIpcDir, 'current_tasks.json');
+  fs.writeFileSync(tasksFile, JSON.stringify(filteredTasks, null, 2));
+}
+
+export function writeGroupsSnapshot(
+  groupFolder: string,
+  isMain: boolean,
+  groups: AvailableGroup[],
+  _registeredJids: Set<string>,
+): void {
+  const groupIpcDir = resolveGroupIpcPath(groupFolder);
+  fs.mkdirSync(groupIpcDir, { recursive: true });
+  const visibleGroups = isMain ? groups : [];
+  const groupsFile = path.join(groupIpcDir, 'available_groups.json');
+  fs.writeFileSync(
+    groupsFile,
+    JSON.stringify({ groups: visibleGroups, lastSync: new Date().toISOString() }, null, 2),
+  );
+}
