@@ -9,7 +9,12 @@ import {
   TRIGGER_PATTERN,
 } from './config.js';
 import { WhatsAppChannel } from './channels/whatsapp.js';
-import { AgentOutput, runInProcessAgent, writeGroupsSnapshot, writeTasksSnapshot } from './agent-runner.js';
+import {
+  AgentOutput,
+  runInProcessAgent,
+  writeGroupsSnapshot,
+  writeTasksSnapshot,
+} from './agent-runner.js';
 import {
   getAllChats,
   getAllRegisteredGroups,
@@ -492,6 +497,17 @@ async function main(): Promise<void> {
       writeGroupsSnapshot(gf, im, ag, rj),
   });
   queue.setProcessMessagesFn(processGroupMessages);
+  queue.setDrainFollowUpsFn(async (chatJid: string, text: string) => {
+    const ch = findChannel(channels, chatJid);
+    if (!ch) {
+      logger.warn({ chatJid }, 'No channel for follow-up drain output, dropping');
+      return;
+    }
+    const stripped = text.replace(/<internal>[\s\S]*?<\/internal>/g, '').trim();
+    if (stripped) {
+      await ch.sendMessage(chatJid, stripped);
+    }
+  });
   recoverPendingMessages();
   startMessageLoop().catch((err) => {
     logger.fatal({ err }, 'Message loop crashed unexpectedly');

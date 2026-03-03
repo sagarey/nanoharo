@@ -11,7 +11,9 @@ vi.mock('./config.js', () => ({
 // Minimal SDKSession mock
 function makeSession(onClose?: () => void) {
   return {
-    close: vi.fn(() => { onClose?.(); }),
+    close: vi.fn(() => {
+      onClose?.();
+    }),
     send: vi.fn(),
     stream: vi.fn(),
   };
@@ -421,6 +423,161 @@ describe('GroupQueue', () => {
 
     resolveProcess!();
     await vi.advanceTimersByTimeAsync(10);
+  });
+
+  // --- drain follow-ups consumer ---
+
+  /**
+   * Helper: returns an async generator that yields the given messages then a
+   * result:success event — mimicking the SDKSession stream() contract.
+   */
+  function makeStreamMessages(msgs: Array<{ text: string }>) {
+    return (async function* () {
+      for (const m of msgs) {
+        yield {
+          type: 'assistant' as const,
+          session_id: 'sid',
+          message: { content: [{ type: 'text', text: m.text }] },
+        };
+      }
+      yield { type: 'result' as const, subtype: 'success', session_id: 'sid' };
+    })();
+  }
+
+  it('drains pendingFollowUps after processMessagesFn completes', async () => {
+    let resolveProcess: () => void;
+
+    const processMessages = vi.fn(async () => {
+      await new Promise<void>((resolve) => {
+        resolveProcess = resolve;
+      });
+      return true;
+    });
+
+    const drainOutputs: string[] = [];
+    queue.setProcessMessagesFn(processMessages);
+    queue.setDrainFollowUpsFn(async (_jid, text) => {
+      drainOutputs.push(text);
+    });
+
+    queue.enqueueMessageCheck('group1@g.us');
+    await vi.advanceTimersByTimeAsync(10);
+
+    const session = makeSession();
+    session.stream = vi
+      .fn()
+      .mockReturnValue(makeStreamMessages([{ text: 'got it' }]));
+    queue.registerSession('group1@g.us', session as any, 'test-group');
+
+    // Queue a follow-up while the primary turn is running
+    queue.sendMessage('group1@g.us', 'follow up text');
+
+    // Primary turn completes
+    resolveProcess!();
+    await vi.advanceTimersByTimeAsync(10);
+
+    expect(session.send).toHaveBeenCalledWith('follow up text');
+    expect(drainOutputs).toEqual(['got it']);
+  });
+
+  it('skips drain when pendingFollowUps is empty', async () => {
+    let resolveProcess: () => void;
+
+    const processMessages = vi.fn(async () => {
+      await new Promise<void>((resolve) => {
+        resolveProcess = resolve;
+      });
+      return true;
+    });
+
+    queue.setProcessMessagesFn(processMessages);
+
+    queue.enqueueMessageCheck('group1@g.us');
+    await vi.advanceTimersByTimeAsync(10);
+
+    const session = makeSession();
+    queue.registerSession('group1@g.us', session as any, 'test-group');
+
+    // No sendMessage call — pendingFollowUps stays empty
+    resolveProcess!();
+    await vi.advanceTimersByTimeAsync(10);
+
+    // session.send should NOT have been called (only primary turn, no follow-ups)
+    expect(session.send).not.toHaveBeenCalled();
+  });
+
+  it('stops drain on SDK error without throwing from runForGroup', async () => {
+    let resolveProcess: () => void;
+
+    const processMessages = vi.fn(async () => {
+      await new Promise<void>((resolve) => {
+        resolveProcess = resolve;
+      });
+      return true;
+    });
+
+    queue.setProcessMessagesFn(processMessages);
+
+    queue.enqueueMessageCheck('group1@g.us');
+    await vi.advanceTimersByTimeAsync(10);
+
+    const session = makeSession();
+    // Make session.send throw on drain call
+    session.send = vi.fn().mockRejectedValue(new Error('SDK connection lost'));
+    queue.registerSession('group1@g.us', session as any, 'test-group');
+
+    queue.sendMessage('group1@g.us', 'follow up text');
+
+    // runForGroup should resolve (not reject) even when drain errors
+    resolveProcess!();
+    await vi.advanceTimersByTimeAsync(10);
+    // No assertion on promise rejection — if it threw, the test would fail
+    // with an unhandled rejection from the runForGroup catch handler.
+    expect(session.send).toHaveBeenCalledWith('follow up text');
+  });
+
+  it('picks up new follow-up pushed during drain stream iteration', async () => {
+    let resolveProcess: () => void;
+
+    const processMessages = vi.fn(async () => {
+      await new Promise<void>((resolve) => {
+        resolveProcess = resolve;
+      });
+      return true;
+    });
+
+    const sendCalls: string[] = [];
+    queue.setProcessMessagesFn(processMessages);
+    queue.setDrainFollowUpsFn(async () => {});
+
+    queue.enqueueMessageCheck('group1@g.us');
+    await vi.advanceTimersByTimeAsync(10);
+
+    const session = makeSession();
+    // First stream() call: during iteration, we push a second follow-up.
+    // The while-loop should catch it on the next pass.
+    let streamCallCount = 0;
+    session.stream = vi.fn().mockImplementation(() => {
+      streamCallCount++;
+      if (streamCallCount === 1) {
+        // During first drain stream, push another follow-up
+        queue.sendMessage('group1@g.us', 'second follow up');
+        return makeStreamMessages([{ text: 'reply 1' }]);
+      }
+      return makeStreamMessages([{ text: 'reply 2' }]);
+    });
+    session.send = vi.fn().mockImplementation(async (msg: string) => {
+      sendCalls.push(msg);
+    });
+    queue.registerSession('group1@g.us', session as any, 'test-group');
+
+    queue.sendMessage('group1@g.us', 'first follow up');
+
+    resolveProcess!();
+    await vi.advanceTimersByTimeAsync(10);
+
+    // Both follow-ups should have been sent
+    expect(sendCalls).toEqual(['first follow up', 'second follow up']);
   });
 
   // --- shutdown closes all active sessions ---
