@@ -2,6 +2,10 @@
 
 Original requirements and design decisions from the project creator.
 
+> **NanoHaro Fork Note:** This document reflects NanoClaw's original design.
+> NanoHaro has diverged in v1.0: agents run in-process via Claude Agent SDK (no containers),
+> and the service itself is packaged as a single Docker image. See PROJECT.md for current architecture.
+
 ---
 
 ## Why This Exists
@@ -70,7 +74,7 @@ A personal Claude assistant accessible via WhatsApp, with minimal custom code.
 
 **Core components:**
 - **Claude Agent SDK** as the core agent
-- **Containers** for isolated agent execution (Linux VMs)
+- **Containers** for isolated agent execution (Linux VMs) — [NanoHaro: replaced by in-process SDK]
 - **WhatsApp** as the primary I/O channel
 - **Persistent memory** per conversation and globally
 - **Scheduled tasks** that run Claude and can message back
@@ -103,6 +107,9 @@ A personal Claude assistant accessible via WhatsApp, with minimal custom code.
 - Sessions auto-compact when context gets too long, preserving critical information
 
 ### Container Isolation
+
+> **NanoHaro:** Removed in v1.0. Agents run in-process; directory-level isolation replaces container sandboxing.
+
 - All agents run inside containers (lightweight Linux VMs)
 - Each agent invocation spawns a container with mounted directories
 - Containers provide filesystem isolation - agents can only see mounted paths
@@ -147,7 +154,7 @@ A personal Claude assistant accessible via WhatsApp, with minimal custom code.
 - Tools: `schedule_task`, `list_tasks`, `pause_task`, `resume_task`, `cancel_task`, `send_message`
 - Tasks stored in SQLite with run history
 - Scheduler loop checks for due tasks every minute
-- Tasks execute Claude Agent SDK in containerized group context
+- Tasks execute Claude Agent SDK in containerized group context — [NanoHaro: in-process, no container]
 
 ### Web Access
 - Built-in WebSearch and WebFetch tools

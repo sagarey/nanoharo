@@ -1,12 +1,18 @@
 # NanoClaw Security Model
 
+> **NanoHaro Fork Note:** NanoHaro v1.0 removed the container isolation layer.
+> The security model below describes NanoClaw's original design.
+> NanoHaro trades OS-level isolation for simplicity: it is a personal-use tool deployed
+> as a single Docker image. Group isolation is directory-level only (groups/{name}/ folders,
+> cwd binding, CLAUDE_HOME). There is no container sandbox between the host process and agents.
+
 ## Trust Model
 
 | Entity | Trust Level | Rationale |
 |--------|-------------|-----------|
 | Main group | Trusted | Private self-chat, admin control |
 | Non-main groups | Untrusted | Other users may be malicious |
-| Container agents | Sandboxed | Isolated execution environment |
+| SDK agents | In-process (no container sandbox) — [NanoHaro: agents run in host process directly] |
 | WhatsApp messages | User input | Potential prompt injection |
 
 ## Security Boundaries
@@ -121,3 +127,5 @@ const allowedVars = ['CLAUDE_CODE_OAUTH_TOKEN', 'ANTHROPIC_API_KEY'];
 │  • Cannot modify security config                                  │
 └──────────────────────────────────────────────────────────────────┘
 ```
+
+> **NanoHaro:** The CONTAINER layer does not exist. Agents run in the HOST PROCESS directly. Group isolation is directory-level: per-group `cwd` and `CLAUDE_HOME` pointing to `groups/{name}/`.
