@@ -59,13 +59,25 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — 创建多阶段 Dockerfile（builder 编译 native modules，runner 含运行时）和 .dockerignore
 
+### Phase 4: Follow-up Drain Consumer
+**Goal**: 实现 `pendingFollowUps` drain 消费者，让 agent 活跃期间收到的追加消息能通过 SDK 真正送达 Claude
+**Depends on**: Phase 1
+**Requirements**: RUNNER-04
+**Gap Closure**: Closes gaps from v1.0 audit
+**Success Criteria** (what must be TRUE):
+  1. 用户在 agent 处理消息期间发送的追加消息，在当前 turn 结束后被正确传递给 Claude SDK
+  2. `state.pendingFollowUps` 数组在 `runForGroup` 中有对应的 drain 消费循环
+  3. follow-up 消息通过 `session.send()` 或等效的 multi-turn API 送达，不再被静默丢弃
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. In-process Agent Runner | 3/3 | Complete | 2026-03-03 |
 | 2. Container Layer Removal | 1/1 | Complete | 2026-03-03 |
 | 3. Single-Image Deployment | 1/1 | Complete | 2026-03-03 |
+| 4. Follow-up Drain Consumer | 0/? | Pending | — |
