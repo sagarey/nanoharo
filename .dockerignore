@@ -1,0 +1,44 @@
+# Build artifacts (rebuilt inside container)
+node_modules/
+dist/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Secrets — NEVER bake into image
+.env
+.env.*
+
+# Persistent data — injected via bind mount at runtime
+store/
+data/
+logs/
+
+# NanoClaw internal state
+.nanoclaw/
+
+# Documentation (not needed at runtime)
+*.md
+
+# Dev tooling and config
+vitest.config.ts
+*.test.ts
+
+# Directories not needed in image
+setup/
+scripts/
+config-examples/
+assets/
+docs/
+launchd/
+repo-tokens/
+skills-engine/
+.planning/
+.claude/
+
+# Husky and editor config
+.husky/
+.prettierrc
+.prettierignore
