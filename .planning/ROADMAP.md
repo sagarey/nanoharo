@@ -42,10 +42,10 @@ Plans:
   1. `src/container-runner.ts`、`src/container-runtime.ts`、`src/mount-security.ts` 不存在
   2. `container/` 目录（Dockerfile、agent-runner、skills、build.sh）不存在
   3. 项目 TypeScript 编译通过，无对已删除模块的引用
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — 迁移 survivor 符号到 agent-runner.ts，修复 import 路径，删除全部容器文件
 
 ### Phase 3: Single-Image Deployment
 **Goal**: 整个 NanoHaro 服务打包为一个 Docker 镜像，可直接 `docker run` 启动
@@ -67,5 +67,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. In-process Agent Runner | 3/3 | Complete | 2026-03-03 |
-| 2. Container Layer Removal | 0/? | Not started | - |
+| 2. Container Layer Removal | 0/1 | Not started | - |
 | 3. Single-Image Deployment | 0/? | Not started | - |
