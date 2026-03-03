@@ -500,7 +500,10 @@ async function main(): Promise<void> {
   queue.setDrainFollowUpsFn(async (chatJid: string, text: string) => {
     const ch = findChannel(channels, chatJid);
     if (!ch) {
-      logger.warn({ chatJid }, 'No channel for follow-up drain output, dropping');
+      logger.warn(
+        { chatJid },
+        'No channel for follow-up drain output, dropping',
+      );
       return;
     }
     const stripped = text.replace(/<internal>[\s\S]*?<\/internal>/g, '').trim();

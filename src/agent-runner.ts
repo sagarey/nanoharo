@@ -237,6 +237,10 @@ export function writeGroupsSnapshot(
   const groupsFile = path.join(groupIpcDir, 'available_groups.json');
   fs.writeFileSync(
     groupsFile,
-    JSON.stringify({ groups: visibleGroups, lastSync: new Date().toISOString() }, null, 2),
+    JSON.stringify(
+      { groups: visibleGroups, lastSync: new Date().toISOString() },
+      null,
+      2,
+    ),
   );
 }
